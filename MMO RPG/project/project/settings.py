@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,10 +38,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
     'mmo',
+    'django_filters',
     'ckeditor',
-    'ckeditor_django',
+    'ckeditor_uploader',
+    'allauth',
+    'allauth.account',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -57,7 +66,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR) , 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,6 +75,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'my_templatetag': 'mmo.templatetags.custom_tags',
+
+            }
         },
     },
 ]
@@ -77,7 +90,8 @@ CKEDITOR_CONFIG = {
         'toolbar': 'full',
     },
 }
-
+CKEDITOR_BASEPATH = "/my_static/ckeditor/ckeditor/"
+CKEDITOR_UPLOAD_PATH = "uploads/"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -129,3 +143,35 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_URL = 'http://127.0.0.1:8000'
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/accounts/logout/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_USERNAME_BLACKLIST = ["admin", "administrator", "moderator"]
+ACCOUNT_USERNAME_MIN_LENGTH = 4
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/accounts/login/'
+
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'timur.zolin.97'
+EMAIL_HOST_PASSWORD = 'pywifryvbeotlerd'
+EMAIL_USE_SSL = True
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
+MANAGERS = [("n1", "timur.zolin.97@yandex.ru")]
+ADMINS = [("n2", "timur.zolin.97@yandex.ru")]
+SERVER_EMAIL = 'timur.zolin.97@yandex.ru'
