@@ -17,7 +17,7 @@ def notify_managers_appointment(sender, instance, created, **kwargs):
         send_mail(
             subject=subject,
             message='ваш отклик отправлен',
-            from_email='stds58@yandex.ru',
+            from_email='timur.zolin.97@yandex.ru',
             recipient_list=[recipient[0]['email'], ],
         )
 
@@ -29,6 +29,6 @@ def delete_managers_appointment(sender, instance, **kwargs):
     send_mail(
         subject=subject,
         message='ваш отклик удалён',
-        from_email='stds58@yandex.ru',
+        from_email='timur.zolin.97@yandex.ru',
         recipient_list=[recipient[0]['email'], ],
     )

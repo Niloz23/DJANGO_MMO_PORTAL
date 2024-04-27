@@ -34,8 +34,8 @@ Post
                <td width="10%"><a href="/posts/{{post.id}}/edit/">изменить</a></td>
                <td width="10%"><a href="/posts/{{post.id}}/delete/">удалить</a></td>
                <td width="10%">
-                {% for foto in post.foto.all %}
-                 {{ foto }}
+                {% for photo in post.photo.all %}
+                 {{ photo }}
                 {% endfor %}
                </td>
                <td width="10%">

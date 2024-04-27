@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import render, redirect
-from .models import Post, Comment, OneTimeCode
+from .models import Post, Comment, OneTimeCode, Photo, Video, File, PostPhoto, PostVideo, PostFile
 from mmo.forms import MyActivationCodeForm, CommentForm
 from django.contrib.auth import authenticate, login
 from allauth.account.models import EmailAddress
@@ -77,10 +77,34 @@ class PostCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         post = form.save(commit=False)
-        author = User.objects.filter(username=self.request.user).values('id')
+        author = User.objects.filter(username = self.request.user).values('id')
         author_id = author.values_list('id')[0][0]
         post.user_id = author_id
         post.save()
+        photos = self.request.FILES.getlist('photo')
+        if photos:
+            for photo in photos:
+                photo_obj = Photo(image = photo)
+                photo_obj.save()
+                post_photo_obj = PostPhoto(post=post, photo=photo_obj)
+                post_photo_obj.save()
+
+        videos = self.request.FILES.getlist('video')
+        if videos:
+            for video in videos:
+                video_obj = Video(video=video)
+                video_obj.save()
+                post_video_obj = PostVideo(post=post, video=video_obj)
+                post_video_obj.save()
+
+        files = self.request.FILES.getlist('file')
+        if files:
+            for file in files:
+                file_obj = File(file=file)
+                file_obj.save()
+                post_file_obj = PostFile(post=post, file=file_obj)
+                post_file_obj.save()
+        return super().form_valid(form)
 
 class PostUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = PostForm
@@ -104,7 +128,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
     form_class = CommentForm
     model = Comment
     template_name = 'comment_edit.html'
-    success_url = ''
+    success_url = reverse_lazy('posts_list')
 
 class CommentAccept(LoginRequiredMixin, UpdateView):
     form_class = AcceptCommentForm
@@ -141,4 +165,9 @@ class CommentsList(LoginRequiredMixin, ListView):
         context['filterset'] = self.filterset
         return context
 
+class PhotoList(LoginRequiredMixin, ListView):
+    model = Photo
+    template_name = 'photos.html'
+    context_object_name = 'photos'
+    paginate_by = 10
 
